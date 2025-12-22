@@ -8,9 +8,12 @@ class Qubit:
     neighbors: List[str] # nearest-neighbor couplings
     signals: List[str]
 
-def build_qubit_grid(nx: int, ny: int, pitch_um: float) -> Dict[str, Qubit]:
+def build_qubit_grid(nx: int, ny: int, pitch_um: float, signals: List[str]) -> Dict[str, Qubit]:
     """
-    Build an nx by ny qubit grid with 4 neighbor connectivity"""
+    Build an nx by ny qubit grid with 4 neighbor connectivity
+    """
+    if not signals:
+        raise ValueError("signals list must not be empty")
 
     qubits: Dict[str, Qubit] = {}
 
@@ -26,9 +29,13 @@ def build_qubit_grid(nx: int, ny: int, pitch_um: float) -> Dict[str, Qubit]:
                 if 0 <= ni < nx and 0 <= nj < ny:
                     neighbors.append(f"Q_{ni}_{nj}")
 
-            signals = ["drive", "readout"]
 
-            qubits[qid] = Qubit(qid=qid, pos=(x, y), neighbors=neighbors, signals=signals)
+            qubits[qid] = Qubit(
+                qid=qid,
+                pos=(x, y),
+                neighbors=neighbors,
+                signals=list(signals)
+                )
 
     validate_qubit_graph(qubits)
     return qubits
